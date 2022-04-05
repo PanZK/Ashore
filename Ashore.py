@@ -201,10 +201,12 @@ class Ashore(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon('static/icon/icon.funtion/icon.png'))
-    app.setApplicationVersion('0.0.75')
     splash = QSplashScreen(QPixmap(r"static/img/cover.png"))
     splash.show()                               #展示启动图片
     app.processEvents()                         #防止进程卡死
+    app.setApplicationVersion('0.0.75')
+    app.setOrganizationName('PanZK')
+    app.setApplicationName("Ashore")
     exe = Ashore()
     exe.show()
     splash.finish(exe)                  #关闭启动界面

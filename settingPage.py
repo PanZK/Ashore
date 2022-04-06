@@ -85,9 +85,20 @@ class Thread(QThread):
 class SettingPage(QWidget):
 
     sinOut = pyqtSignal(dict)
+    #生成资源文件目录访问路径
+    #说明： pyinstaller工具打包的可执行文件，运行时sys。frozen会被设置成True
+    #      因此可以通过sys.frozen的值区分是开发环境还是打包后的生成环境
+    #
+    #      打包后的生产环境，资源文件都放在sys._MEIPASS目录下
+    #      修改main.spec中的datas，
+    #      如datas=[('res', 'res')]，意思是当前目录下的res目录加入目标exe中，在运行时放在零时文件的根目录下，名称为res
+    BASEPATH = ''
+    if getattr(sys, 'frozen', False):
+        BASEPATH = sys._MEIPASS + '/'
 
     def __init__(self):
-        self.confPath = CONFIGPATH
+        self.confPath = os.path.expanduser('~') + '/.config/ashore/aria2.conf'
+        print(self.confPath)
         super().__init__()
         self.globalConfig = TESTDIC
         self.initUI()
@@ -101,7 +112,7 @@ class SettingPage(QWidget):
         #设置目录补全
         completer = QCompleter()
         model = QFileSystemModel()
-        model.setRootPath('/Users/panzk/Downloads')
+        model.setRootPath(os.path.expanduser('~/Downloads'))
         completer.setModel(model)
         self.pathLineEdit.setCompleter(completer)
         self.pathLineEdit.setMinimumWidth(400)
@@ -237,7 +248,7 @@ class SettingPage(QWidget):
 
     def getConfDatetime(self) -> str:
         config = configparser.ConfigParser()
-        config.read('config/ashore.conf', encoding='UTF-8')
+        config.read(self.BASEPATH + 'config/ashore.conf', encoding='UTF-8')
         datetime = config.get('global','trackers_list_time')
         return datetime
 

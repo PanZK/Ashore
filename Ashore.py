@@ -24,6 +24,16 @@ DEFAULTPATH = os.path.expanduser('~/Downloads')
 class Ashore(QMainWindow):
     def __init__(self):
         super().__init__()
+        #生成资源文件目录访问路径
+        #说明： pyinstaller工具打包的可执行文件，运行时sys。frozen会被设置成True
+        #      因此可以通过sys.frozen的值区分是开发环境还是打包后的生成环境
+        #
+        #      打包后的生产环境，资源文件都放在sys._MEIPASS目录下
+        #      修改main.spec中的datas，
+        #      如datas=[('res', 'res')]，意思是当前目录下的res目录加入目标exe中，在运行时放在零时文件的根目录下，名称为res
+        self.BASEPATH = ''
+        if getattr(sys, 'frozen', False):
+            self.BASEPATH = sys._MEIPASS + '/'
         self.downloadingList = []
         self.aria2Operate = Aria2Operate()
         # self.aria2ConfPath = self.aria2Operate.getConfigPath()
@@ -35,15 +45,16 @@ class Ashore(QMainWindow):
         self.timer.start(1000)  # 设置计时间隔并启动；单位毫秒
 
     def initUI(self):
-        self.tabDownloading = QPushButton(QIcon('static/icon/icon.funtion/download.png'),'')
+        # print(sys._MEIPASS+ '/static/icon/icon.funtion/download.png')
+        self.tabDownloading = QPushButton(QIcon(self.BASEPATH + 'static/icon/icon.funtion/download.png'),'')
         self.tabDownloading.setFlat(True)
         self.tabDownloading.setIconSize(QSize(23,23))
         self.tabDownloading.setToolTip('下载中')
-        self.tabDownloaded = QPushButton(QIcon('static/icon/icon.funtion/complete.png'),'')
+        self.tabDownloaded = QPushButton(QIcon(self.BASEPATH + 'static/icon/icon.funtion/complete.png'),'')
         self.tabDownloaded.setFlat(True)
         self.tabDownloaded.setIconSize(QSize(23,23))
         self.tabDownloaded.setToolTip('已完成')
-        self.tabSetting = QPushButton(QIcon('static/icon/icon.funtion/setting.png'),'')
+        self.tabSetting = QPushButton(QIcon(self.BASEPATH + 'static/icon/icon.funtion/setting.png'),'')
         self.tabSetting.setFlat(True)
         self.tabSetting.setIconSize(QSize(23,23))
         self.tabSetting.setToolTip('设置')
@@ -52,7 +63,7 @@ class Ashore(QMainWindow):
         tabLayout.addWidget(self.tabDownloaded)
         tabLayout.addStretch(10)
         tabLayout.addWidget(self.tabSetting)
-        self.addBtn = QPushButton(QIcon('static/icon/icon.funtion/add.png'),'')
+        self.addBtn = QPushButton(QIcon(self.BASEPATH + 'static/icon/icon.funtion/add.png'),'')
         self.addBtn.setFlat(True)
         self.addBtn.setIconSize(QSize(20,20))
         self.addBtn.setToolTip('新建下载')
@@ -83,7 +94,7 @@ class Ashore(QMainWindow):
         self.status.showMessage('这是状态栏提示',4000)
         #创建窗口标题
         self.setWindowTitle('Ashore')
-        self.setWindowIcon(QIcon('static/icon/icon.funtion/icon.png'))
+        self.setWindowIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/icon.png'))
         self.setStyleSheet('''
             Ashore QPushButton{width:40;height:40;border-radius:8;}
             Ashore QPushButton:hover{background-color:#5f5f5f;border: 1 solid #bababa;}
@@ -199,9 +210,12 @@ class Ashore(QMainWindow):
         self.aria2Operate.setGlobalConfig(conf)
 
 if __name__ == '__main__':
+    BASEPATH = ''
+    if getattr(sys, 'frozen', False):
+        BASEPATH = sys._MEIPASS + '/'
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon('static/icon/icon.funtion/icon.png'))
-    splash = QSplashScreen(QPixmap(r"static/img/cover.png"))
+    app.setWindowIcon(QIcon(BASEPATH + 'static/icon/icon.funtion/icon.png'))
+    splash = QSplashScreen(QPixmap(BASEPATH + 'static/img/cover.png'))
     splash.show()                               #展示启动图片
     app.processEvents()                         #防止进程卡死
     app.setApplicationVersion('0.0.75')

@@ -22,6 +22,16 @@ class Section(QFrame):
     # openFileOut = pyqtSignal(tuple)
     openDirOut = pyqtSignal(str)
     removeDelOut = pyqtSignal(tuple)
+    #生成资源文件目录访问路径
+    #说明： pyinstaller工具打包的可执行文件，运行时sys。frozen会被设置成True
+    #      因此可以通过sys.frozen的值区分是开发环境还是打包后的生成环境
+    #
+    #      打包后的生产环境，资源文件都放在sys._MEIPASS目录下
+    #      修改main.spec中的datas，
+    #      如datas=[('res', 'res')]，意思是当前目录下的res目录加入目标exe中，在运行时放在零时文件的根目录下，名称为res
+    BASEPATH = ''
+    if getattr(sys, 'frozen', False):
+        BASEPATH = sys._MEIPASS + '/'
 
     def __init__(self, gid:str, fileName:str, status:str, fileSize:int, completedSize:int, speed:int):
         super().__init__()
@@ -63,38 +73,38 @@ class Section(QFrame):
         self.aOrpBtn.setFixedSize(23,23)
         self.aOrpBtn.setFlat(True)
         if self.status == 'active' or self.status == 'waiting':
-            self.aOrpBtn.setIcon(QIcon('static/icon/icon.funtion/pause.png'))
+            self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/pause.png'))
             self.aOrpBtn.setIconSize(QSize(16,16))
             self.aOrpBtn.setToolTip('暂停任务')
         elif self.status == 'paused':
-            self.aOrpBtn.setIcon(QIcon('static/icon/icon.funtion/play.png'))
+            self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/play.png'))
             self.aOrpBtn.setIconSize(QSize(20,20))
             self.aOrpBtn.setToolTip('开始任务')
         elif self.status == 'complete':
-            self.aOrpBtn.setIcon(QIcon('static/icon/icon.funtion/openfile.png'))
+            self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/openfile.png'))
             self.aOrpBtn.setIconSize(QSize(18,18))
             self.aOrpBtn.setToolTip('打开文件')
         elif self.status == 'error':
-            self.aOrpBtn.setIcon(QIcon('static/icon/icon.funtion/retry.png'))
+            self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/retry.png'))
             self.aOrpBtn.setIconSize(QSize(18,18))
             self.aOrpBtn.setToolTip('重试')
         self.openDirBtn = QPushButton()
         self.openDirBtn.setFixedSize(23,23)
         self.openDirBtn.setFlat(True)
         self.openDirBtn.setIconSize(QSize(16,16))
-        self.openDirBtn.setIcon(QIcon('static/icon/icon.funtion/openfolder.png'))
+        self.openDirBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/openfolder.png'))
         self.openDirBtn.setToolTip('打开目录')
         self.removeBtn =  QPushButton()
         self.removeBtn.setFixedSize(23,23)
         self.removeBtn.setFlat(True)
         self.removeBtn.setIconSize(QSize(20,20))
-        self.removeBtn.setIcon(QIcon('static/icon/icon.funtion/remove.png'))
+        self.removeBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/remove.png'))
         self.removeBtn.setToolTip('从列表中移除任务')
         self.delBtn =  QPushButton()
         self.delBtn.setFixedSize(23,23)
         self.delBtn.setFlat(True)
         self.delBtn.setIconSize(QSize(16,16))
-        self.delBtn.setIcon(QIcon('static/icon/icon.funtion/del.png'))
+        self.delBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/del.png'))
         self.delBtn.setToolTip('彻底删除任务')
 
         btnLayout = QHBoxLayout()
@@ -161,19 +171,19 @@ class Section(QFrame):
             self.progressBar.setValue(int(completedSize / fileSize * 100))
         if status == 'active':
             self.speedLabel.setText(self.getSpeedStr())
-            self.aOrpBtn.setIcon(QIcon('static/icon/icon.funtion/pause.png'))
+            self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/pause.png'))
             self.aOrpBtn.setToolTip('暂停任务')
         elif status == 'paused':
             self.speedLabel.setText('已暂停')
-            self.aOrpBtn.setIcon(QIcon('static/icon/icon.funtion/play.png'))
+            self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/play.png'))
             self.aOrpBtn.setToolTip('开始任务')
         elif status == 'waiting':
             self.speedLabel.setText('等待中')
-            self.aOrpBtn.setIcon(QIcon('static/icon/icon.funtion/pause.png'))
+            self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/pause.png'))
             self.aOrpBtn.setToolTip('暂停任务')
         elif status == 'error':
             self.speedLabel.setText('错误')
-            self.aOrpBtn.setIcon(QIcon('static/icon/icon.funtion/retry.png'))
+            self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/retry.png'))
             self.aOrpBtn.setToolTip('重试')
         elif status == 'complete':
             self.speedLabel.setText('已完成')
@@ -183,14 +193,14 @@ class Section(QFrame):
         fileType = self.fileName.split('.')[-1]
         if status == 'active' or status == 'complete':
             if fileType in FILETYPE:
-                self.iconLabel.setPixmap(QPixmap('static/icon/icon.ing/' + fileType + '.png'))
+                self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.ing/' + fileType + '.png'))
             else:
-                self.iconLabel.setPixmap(QPixmap('static/icon/icon.ing/paper.png'))
+                self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.ing/paper.png'))
         else:
             if fileType in FILETYPE:
-                self.iconLabel.setPixmap(QPixmap('static/icon/icon.stop/' + fileType + '.png'))
+                self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.stop/' + fileType + '.png'))
             else:
-                self.iconLabel.setPixmap(QPixmap('static/icon/icon.stop/paper.png'))
+                self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.stop/paper.png'))
 
     def mousePressEvent(self,event):
         print('鼠标按下')

@@ -27,7 +27,7 @@ class Aria2Operate():
         if not os.path.exists(os.path.expanduser('~/.config/ashore/aria2.session')):
             os.system('cp config/aria2.session ~/.config/ashore/aria2.session')
         os.system('aria2c --conf-path="' + os.path.expanduser('~') +'/.config/ashore/aria2.conf" -D')
-        self.aria2 = aria2p.API(aria2p.Client(host="http://localhost",port=6800,secret=""))
+        self.aria2 = aria2p.API(aria2p.Client(host="http://localhost",port=6801,secret=""))
 
     def getDownloading(self):
         downloads = self.aria2.get_downloads()

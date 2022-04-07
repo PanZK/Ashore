@@ -5,7 +5,7 @@
 
 <p align="center"><br>Ashore 是一个用Python编写的内核为aria2的下载工具。<br><br></p>
 
-&emsp;&emsp;![](https://img.shields.io/badge/python-v3.10-blue)&ensp;![](https://img.shields.io/badge/PyQt-v6-yellowgreen)&ensp;![PyPI - License](https://img.shields.io/badge/license-GPL-blue)&ensp;[![download](https://img.shields.io/badge/download-82M-brightgreen)](https://github.com/PanZK/videoSorter/releases)
+&emsp;&emsp;![](https://img.shields.io/badge/python-v3.10-blue)&ensp;![](https://img.shields.io/badge/PyQt-v6-yellowgreen)&ensp;![PyPI - License](https://img.shields.io/badge/license-GPL-blue)&ensp;[![download](https://img.shields.io/badge/download-25.1M-brightgreen)](https://github.com/PanZK/Ashore/releases)
 
 ---
 

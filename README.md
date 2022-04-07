@@ -1,6 +1,8 @@
 <h1  align="center">Ashore</h1>
 
-<img src="https://raw.githubusercontent.com/PanZK/MyFiles/master/Ashore/icon.png>
+![img](https://raw.githubusercontent.com/PanZK/Ashore/main/static/icon/icon.funtion/icon0.png)
+
+
 
 <p align="center"><br>Ashore 是一个用Python编写的内核为aria2的下载工具。<br><br></p>
 

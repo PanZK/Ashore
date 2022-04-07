@@ -15,8 +15,9 @@
 - 下载内核部分使用[aria2](https://github.com/aria2/aria2)
 - 过渡部分使用[aria2p](https://github.com/pawamoy/aria2p)
 - 程序界面使用[PyQt6](https://pypi.org/project/PyQt6/)制作
-- 默认使用aria2的RPC端口号为 `6801`
+- 默认使用aria2的RPC端口号为 `6801`避免冲突
 - 其他配置同aria2
+- 关于aria2的配置[Mac下配置Aria2](https://gist.github.com/sumpeter/9f71b26b0e79cfd3bae39c3bdf6cfd8c)这里讲的非常细致
 - 目前功能未完全实现，界面也没好好写
 
 ## Usage

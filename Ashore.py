@@ -2,18 +2,17 @@
 # -*- encoding: utf-8 -*-
 '''
 @Time    :   2022/03/20 20:12:13
-@File    :   Ashore.1.py
+@File    :   Ashore.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   1.0
+@Version :   0.1.75
 @Contact :   for_freedom_x64@live.com
 '''
 
-import sys, os, subprocess, time
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QLabel, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QListWidget, QMessageBox, QFileDialog, QProgressBar, QFrame, QScrollArea, QDialog, QTextEdit, QLineEdit, QGridLayout, QSplashScreen
-from PyQt6.QtGui import QGuiApplication, QFont, QIcon, QImage,QPixmap
-from PyQt6.QtCore import Qt, pyqtSignal, QRect, QTimer, QSize
-from section import Section
+import sys, os, subprocess
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QSplashScreen
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtCore import QTimer, QSize
 from page import Page
 from aria2Operate import Aria2Operate
 from addNewDialog import AddNewDialog
@@ -34,6 +33,9 @@ class Ashore(QMainWindow):
         self.BASEPATH = ''
         if getattr(sys, 'frozen', False):
             self.BASEPATH = sys._MEIPASS + '/'
+        # print(os.path.abspath(__file__))
+        # print(cur_path)
+        # print(sys.executable)
         self.downloadingList = []
         self.aria2Operate = Aria2Operate()
         # self.aria2ConfPath = self.aria2Operate.getConfigPath()
@@ -45,11 +47,11 @@ class Ashore(QMainWindow):
         self.timer.start(1000)  # 设置计时间隔并启动；单位毫秒
 
     def initUI(self):
-        # print(sys._MEIPASS+ '/static/icon/icon.funtion/download.png')
         self.tabDownloading = QPushButton(QIcon(self.BASEPATH + 'static/icon/icon.funtion/download.png'),'')
         self.tabDownloading.setFlat(True)
         self.tabDownloading.setIconSize(QSize(23,23))
         self.tabDownloading.setToolTip('下载中')
+        self.tabDownloading.setEnabled(False)
         self.tabDownloaded = QPushButton(QIcon(self.BASEPATH + 'static/icon/icon.funtion/complete.png'),'')
         self.tabDownloaded.setFlat(True)
         self.tabDownloaded.setIconSize(QSize(23,23))
@@ -58,6 +60,7 @@ class Ashore(QMainWindow):
         self.tabSetting.setFlat(True)
         self.tabSetting.setIconSize(QSize(23,23))
         self.tabSetting.setToolTip('设置')
+        self.tabSetting.setShortcut("Ctrl+,")
         tabLayout = QVBoxLayout()
         tabLayout.addWidget(self.tabDownloading)
         tabLayout.addWidget(self.tabDownloaded)
@@ -67,6 +70,7 @@ class Ashore(QMainWindow):
         self.addBtn.setFlat(True)
         self.addBtn.setIconSize(QSize(20,20))
         self.addBtn.setToolTip('新建下载')
+        self.addBtn.setShortcut("Ctrl+N")
         btnLayout = QHBoxLayout()
         btnLayout.addWidget(self.addBtn)
         #添加弹簧
@@ -155,11 +159,21 @@ class Ashore(QMainWindow):
         return s
 
     def slotSwitchDownloading(self):
+        self.tabDownloading.setEnabled(False)
+        self.tabDownloaded.setEnabled(True)
+        self.tabSetting.setEnabled(True)
         self.pageStack.setCurrentIndex(0)
+
     def slotSwitchDownloaded(self):
+        self.tabDownloading.setEnabled(True)
+        self.tabDownloaded.setEnabled(False)
+        self.tabSetting.setEnabled(True)
         self.pageStack.setCurrentIndex(1)
 
     def slotSwitchSetting(self):
+        self.tabDownloading.setEnabled(True)
+        self.tabDownloaded.setEnabled(True)
+        self.tabSetting.setEnabled(False)
         options = self.aria2Operate.getGlobalConfig()
         self.pageSetting.updateSetting(options)
         self.pageStack.setCurrentIndex(2)
@@ -214,7 +228,8 @@ if __name__ == '__main__':
     if getattr(sys, 'frozen', False):
         BASEPATH = sys._MEIPASS + '/'
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(BASEPATH + 'static/icon/icon.funtion/icon.png'))
+    app.setQuitOnLastWindowClosed(False)    #设置关闭窗口后最小化
+    app.setWindowIcon(QIcon(BASEPATH + 'static/icon/icon.funtion/icon.icns'))
     splash = QSplashScreen(QPixmap(BASEPATH + 'static/img/cover.png'))
     splash.show()                               #展示启动图片
     app.processEvents()                         #防止进程卡死

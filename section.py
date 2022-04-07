@@ -5,21 +5,20 @@
 @File    :   section.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   1.0
+@Version :   0.1.75
 @Contact :   for_freedom_x64@live.com
 '''
 
 FILETYPE = ['iso', 'jpg', 'zip', 'rar']
 
 import sys, os
-from PyQt6.QtWidgets import QApplication, QLabel, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QListWidget, QMessageBox, QFileDialog, QProgressBar, QFrame, QGridLayout, QLayoutItem,QSpacerItem,QSizePolicy
-from PyQt6.QtGui import QGuiApplication, QFont, QIcon, QImage,QPixmap, QPalette
-from PyQt6.QtCore import Qt, pyqtSignal, QRect,QObject, QSize
+from PyQt6.QtWidgets import QApplication, QLabel, QWidget, QPushButton, QHBoxLayout, QProgressBar, QFrame, QGridLayout, QSpacerItem,QSizePolicy
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtCore import pyqtSignal, QSize
 
 class Section(QFrame):
     count = 0
     doubleClickOut = pyqtSignal(tuple)
-    # openFileOut = pyqtSignal(tuple)
     openDirOut = pyqtSignal(str)
     removeDelOut = pyqtSignal(tuple)
     #生成资源文件目录访问路径
@@ -159,8 +158,6 @@ class Section(QFrame):
         # self.setLineWidth(3)
         # self.setMidLineWidth(3)
 
-        # self.setInfo(fileName, speed, '1GB', 56.8)
-# self, gid:str, fileName:str, status:str, fileSize:int, completedSize:int, speed:int
     def updateInfo(self, status:str, fileSize:int, completedSize:int, speed:int):
         self.fileSize = fileSize
         self.status = status
@@ -203,22 +200,24 @@ class Section(QFrame):
                 self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.stop/paper.png'))
 
     def mousePressEvent(self,event):
-        print('鼠标按下')
+        # print('鼠标按下')
+        pass
     def mouseReleaseEvent(self,event):
-        print('鼠标抬起')
+        # print('鼠标抬起')
+        pass
     def mouseDoubleClickEvent(self,event):
-        print('双击:' + self.gid)
+        # print('双击:' + self.gid)
         self.doubleClickOut.emit((self.gid, self.status))
 
     def enterEvent(self, event):        #鼠标进入控件;
-        print('进入')
+        # print('进入')
         self.aOrpBtn.show()
         self.openDirBtn.show()
         self.removeBtn.show()
         self.delBtn.show()
         # self.setStyleSheet('#Section{border: 2px solid blue;border-radius:5;}')
     def leaveEvent(self, event):        #鼠标离开控件;
-        print('拿走')
+        # print('拿走')
         self.aOrpBtn.hide()
         self.openDirBtn.hide()
         self.removeBtn.hide()

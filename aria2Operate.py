@@ -18,7 +18,7 @@ class Aria2Operate():
     def __init__(self):
         # os.system('aria2c --conf-path="/Users/panzk/.config/aria2/aria2.conf" -D')
         #判断配置文件夹及配置文件是否存在
-        if  not os.path.exists(os.path.expanduser('~/.config/ashore')):
+        if not os.path.exists(os.path.expanduser('~/.config/ashore')):
             os.system('mkdir ~/.config/ashore')
             os.system('cp config/aria2.conf ~/.config/ashore/aria2.conf')
             os.system('cp config/aria2.session ~/.config/ashore/aria2.session')
@@ -77,7 +77,6 @@ class Aria2Operate():
     
     def setGlobalConfig(self, conf:dict):
         f = self.aria2.set_global_options(conf)
-        print(f)
     
     # def getConfigPath(self):
     #     dic = self.getGlobalConfig()
@@ -85,7 +84,7 @@ class Aria2Operate():
 
     def __del__(self):
         os.system('pkill -f aria2c')
-        print("调用__del__() 销毁对象，释放其空间")
+        # print("调用__del__() 销毁对象，释放其空间")
 
 if __name__ == '__main__':
     aria2Operate = Aria2Operate()

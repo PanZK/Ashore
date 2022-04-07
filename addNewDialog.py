@@ -5,12 +5,12 @@
 @File    :   addNew.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   1.0
+@Version :   0.1.75
 @Contact :   for_freedom_x64@live.com
 '''
 
 import sys, os, re
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QLabel, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QListWidget, QMessageBox, QFileDialog, QProgressBar, QFrame, QScrollArea, QDialog, QTextEdit, QLineEdit, QGridLayout
+from PyQt6.QtWidgets import QApplication, QPushButton, QFileDialog, QDialog, QTextEdit, QLineEdit, QGridLayout
 from PyQt6.QtCore import Qt, pyqtSignal
 
 REDIC = {

@@ -5,15 +5,15 @@
 @File    :   settingPage.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   1.0
+@Version :   0.1.75
 @Contact :   for_freedom_x64@live.com
 '''
 
 import sys, os, time, configparser
 import urllib.request
-from PyQt6.QtWidgets import QApplication, QTabWidget, QLabel, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QListWidget, QMessageBox, QFileDialog, QProgressBar, QFrame, QScrollArea, QFormLayout, QLineEdit, QTextEdit,QGridLayout, QComboBox, QCompleter, QSpinBox
-from PyQt6.QtGui import QGuiApplication, QFont, QIcon, QImage,QPixmap, QIntValidator,QFileSystemModel
-from PyQt6.QtCore import Qt, pyqtSignal, QRect, QDateTime, QThread, QMutex, QAbstractItemModel,QStandardPaths
+from PyQt6.QtWidgets import QApplication, QLabel, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QScrollArea, QFormLayout, QLineEdit, QTextEdit,QGridLayout, QComboBox, QCompleter, QSpinBox
+from PyQt6.QtGui import QFileSystemModel
+from PyQt6.QtCore import Qt, pyqtSignal, QThread, QMutex
 
 TESTDIC  = {
     'conf-path' :   '/Users/panzk/.config/aria2/aria2.conf',
@@ -40,7 +40,6 @@ TRACKERURL = [
     'https://cdn.jsdelivr.net/gh/XIU2/TrackersListCollection/best_aria2.txt',
     'https://trackerslist.com/best.txt',
     ]
-CONFIGPATH = '/Users/panzk/.config/ashore/aria2.conf'
 class Thread(QThread):
 
     sinOut = pyqtSignal(str)
@@ -78,8 +77,6 @@ class Thread(QThread):
                 break
         self.sinOut.emit(self.text)
         self.qmut.unlock()
-    def __del__(self):
-        print('销毁线程')
 
 
 class SettingPage(QWidget):
@@ -93,14 +90,19 @@ class SettingPage(QWidget):
     #      修改main.spec中的datas，
     #      如datas=[('res', 'res')]，意思是当前目录下的res目录加入目标exe中，在运行时放在零时文件的根目录下，名称为res
     BASEPATH = ''
+    confPath = os.path.expanduser('~') + '/.config/ashore/aria2.conf'
+    exeConfPath = 'config'
     if getattr(sys, 'frozen', False):
         BASEPATH = sys._MEIPASS + '/'
+        exeConfPath = os.path.dirname(os.path.dirname(sys.executable)) + '/Resources/config'
 
     def __init__(self):
-        self.confPath = os.path.expanduser('~') + '/.config/ashore/aria2.conf'
-        print(self.confPath)
         super().__init__()
         self.globalConfig = TESTDIC
+        if not os.path.exists(self.exeConfPath):
+            os.system('mkdir ' + self.exeConfPath)
+        if not os.path.exists(self.exeConfPath + '/ashore.conf'):
+            os.system('cp ' + self.BASEPATH + 'config/ashore.conf ' + self.exeConfPath)
         self.initUI()
 
     def initUI(self):
@@ -248,15 +250,15 @@ class SettingPage(QWidget):
 
     def getConfDatetime(self) -> str:
         config = configparser.ConfigParser()
-        config.read(self.BASEPATH + 'config/ashore.conf', encoding='UTF-8')
+        config.read(self.exeConfPath + '/ashore.conf', encoding='UTF-8')
         datetime = config.get('global','trackers_list_time')
         return datetime
 
     def setConfDatetime(self, datetime:str):
         config = configparser.ConfigParser()
-        config.read('config/ashore.conf', encoding='UTF-8')
+        config.read(self.exeConfPath + '/ashore.conf', encoding='UTF-8')
         config.set('global', 'trackers_list_time', datetime)
-        config.write(open('config/ashore.conf', 'w'))
+        config.write(open(self.exeConfPath + '/ashore.conf', 'w'))
 
     def slotDir(self):
         path = QFileDialog.getExistingDirectory(self,'Open dir', self.pathLineEdit.text(), QFileDialog.Option.ShowDirsOnly)
@@ -287,7 +289,7 @@ class SettingPage(QWidget):
             self.setConfDatetime(datetime)
             self.trackerInfo.setText(datetime)
             self.btTracker.setText(trakers)
-            print(trakers)
+            # print(trakers)
         self.trackerBtn.setText('更新Tracker')
         self.trackerBtn.setEnabled(True)
         self.saveBtn.setEnabled(True)
@@ -317,8 +319,8 @@ class SettingPage(QWidget):
         self.globalConfig = aria2pDic                   #将修改后的aria2p的全局配置赋给self.globalConfig
         self.updateSetting(self.globalConfig)           #刷新界面
         self.saveInfoLabel.setText('保存成功')
-        print(configFile.get('global','dir'))
-        print(aria2pDic)
+        # print(configFile.get('global','dir'))
+        # print(aria2pDic)
     
     def setConfig(self, configFile, aria2pDic, option:str, value:str):  #设置两种来源的配置
         configFile.set('global', option, value)             #修改aria2配置文件

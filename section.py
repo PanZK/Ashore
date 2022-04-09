@@ -5,11 +5,11 @@
 @File    :   section.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.75
+@Version :   0.1.80
 @Contact :   for_freedom_x64@live.com
 '''
 
-FILETYPE = ['iso', 'jpg', 'zip', 'rar']
+FILETYPE = ['iso', 'jpg', 'bmp', 'svg', 'gif', 'zip', 'rar', 'dmg', 'psd', 'exe', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'mp4', 'pdf', 'php', 'mkv', 'avi', 'mov', 'mpg', 'ppt', 'ai', 'swf', 'html', 'htm', 'js', 'css', 'bin', 'flac', 'aac', 'mp3', 'ini', 'db', 'tiff', 'java', 'cad', 'rss', 'sys', 'dwg', 'dwf', 'ps', 'aut', 'ace', 'eps', 'cdr', 'hlp', 'rtf']
 
 import sys, os
 from PyQt6.QtWidgets import QApplication, QLabel, QWidget, QPushButton, QHBoxLayout, QProgressBar, QFrame, QGridLayout, QSpacerItem,QSizePolicy

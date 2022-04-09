@@ -5,7 +5,7 @@
 @File    :   addNew.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.75
+@Version :   0.1.80
 @Contact :   for_freedom_x64@live.com
 '''
 

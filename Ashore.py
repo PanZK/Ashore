@@ -10,8 +10,8 @@
 '''
 
 import sys, os, subprocess
-from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QSplashScreen
-from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QSplashScreen, QMenu
+from PyQt6.QtGui import QIcon, QPixmap, QAction
 from PyQt6.QtCore import QTimer, QSize
 from page import Page
 from aria2Operate import Aria2Operate
@@ -45,6 +45,28 @@ class Ashore(QMainWindow):
         self.timer = QTimer(self)  # 初始化一个定时器
         self.timer.timeout.connect(self.updatePage)  # 每次计时到时间时发出信号
         self.timer.start(1000)  # 设置计时间隔并启动；单位毫秒
+    
+    def createMenuBar(self):
+        menuBar = self.menuBar()
+        newBtn = QAction('新建下载',self)
+        newBtn.setShortcut('Ctrl+N')
+        newBtn.triggered.connect(self.slotAddNew)
+        fileMenu = menuBar.addMenu("文件")
+        fileMenu.addAction(newBtn)
+        showBtn = QAction('显示窗口',self)
+        showBtn.setShortcut('Ctrl+R')
+        showBtn.triggered.connect(self.show)
+        hideBtn = QAction('关闭窗口',self)
+        hideBtn.setStatusTip('退出当前应用')
+        hideBtn.setShortcut('Ctrl+W')
+        hideBtn.triggered.connect(self.hide)
+        windowMenu = menuBar.addMenu("窗口")
+        windowMenu.addAction(showBtn)
+        windowMenu.addAction(hideBtn)
+        aboutBtn = QAction('关于',self)
+        helpMenu = menuBar.addMenu("帮助")
+        helpMenu.addAction(aboutBtn)
+        self.setMenuBar(menuBar)
 
     def initUI(self):
         self.tabDownloading = QPushButton(QIcon(self.BASEPATH + 'static/icon/icon.funtion/download.png'),'')
@@ -106,6 +128,8 @@ class Ashore(QMainWindow):
             Ashore Section QPushButton{width:23;height:23;border-radius:3;}
             SettingPage QPushButton{width:23;height:23;border-radius:3;background-color:#5d795f}
         ''')
+        self.createMenuBar()
+
     def setConnect(self):
         self.addBtn.clicked.connect(self.slotAddNew)
         self.tabDownloading.clicked.connect(self.slotSwitchDownloading)
@@ -179,21 +203,12 @@ class Ashore(QMainWindow):
         self.pageStack.setCurrentIndex(2)
 
     def slotAddNew(self):
-        form = AddNewDialog(DEFAULTPATH)
-        form.sinOut.connect(self.slotUrlsPath)
+        # form = AddNewDialog(DEFAULTPATH)
+        form = AddNewDialog(self.pageSetting.getDownloadPath())
+        form.sinOut.connect(self.aria2Operate.addDownloads)
         form.show()
         form.exec()
         self.updatePage()
-
-    def slotUrlsPath(self, data):
-        urls = data[0]
-        path = data[1]
-        if len(urls) == 1:
-            #单文件
-            self.aria2Operate.addDownload(urls[0], path)
-        else:
-            #多文件
-            self.aria2Operate.addDownloads(urls, path)
 
     def slotDoubleClick(self, data:tuple):
         gid = data[0]

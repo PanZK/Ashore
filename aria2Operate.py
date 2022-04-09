@@ -34,12 +34,12 @@ class Aria2Operate():
         return downloads
         for download in downloads:
             print('文件名%s,状态%s,速度%s,gid%s' % (download.name, download.status, download.download_speed_string, download.gid))
-    
-    def addDownload(self, url:str, path:str):
-        self.aria2.add(url)
 
-    def addDownloads(self, urls:list[str], path:str):
-        self.aria2.add_uris(urls)
+    def addDownloads(self, data:tuple):
+        urls = data[0]
+        path = data[1]
+        for url in urls:
+            self.aria2.add(url, {'dir': path})
     
     def getObjects(self, gids:list[str]) -> list:   #通过gid号得到aria2下载对象downloaddObject
         temp = []

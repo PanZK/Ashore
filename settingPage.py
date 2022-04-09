@@ -259,6 +259,9 @@ class SettingPage(QWidget):
         config.read(self.exeConfPath + '/ashore.conf', encoding='UTF-8')
         config.set('global', 'trackers_list_time', datetime)
         config.write(open(self.exeConfPath + '/ashore.conf', 'w'))
+    
+    def getDownloadPath(self) -> str:
+        return self.globalConfig['dir']
 
     def slotDir(self):
         path = QFileDialog.getExistingDirectory(self,'Open dir', self.pathLineEdit.text(), QFileDialog.Option.ShowDirsOnly)

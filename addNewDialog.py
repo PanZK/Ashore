@@ -15,7 +15,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 
 REDIC = {
     'url' : r'(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?',
-    'bt' : r'/^(magnet:\?xt=urn:btih:)[0-9a-fA-F]{40}.*$/'
+    'magnet' : r'(magnet:\?xt=urn:btih:)[0-9a-fA-F]{40}',
     }
 
 class AddNewDialog(QDialog):
@@ -57,18 +57,20 @@ class AddNewDialog(QDialog):
         text = self.text.toPlainText()
         if text != '':
             urlList = []
-            #校验是否为url或bt
+            #校验是否为url或magnet
             for item in text.split('\n'):
                 temp1 = re.findall(REDIC['url'], item)
-                temp2 = re.findall(REDIC['bt'], item)
+                temp2 = re.findall(REDIC['magnet'], item)
+                print(temp2)
                 if temp1 != [] or temp2 != []:
                     urlList.append(item)
             dir = self.dirEdit.text()
+            print(urlList)
             self.sinOut.emit((urlList,dir))
         self.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    exe = AddNewDialog()
+    exe = AddNewDialog(os.path.expanduser('~/Downloads'))
     exe.show()
     sys.exit(app.exec())

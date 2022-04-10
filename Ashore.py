@@ -254,4 +254,6 @@ if __name__ == '__main__':
     exe = Ashore()
     exe.show()
     splash.finish(exe)                  #关闭启动界面
-    sys.exit(app.exec())
+    app.exec()
+    del exe
+    sys.exit()

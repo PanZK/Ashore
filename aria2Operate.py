@@ -9,7 +9,7 @@
 @Contact :   for_freedom_x64@live.com
 '''
 
-import os, aria2p
+import os, sys, aria2p, subprocess
 from time import sleep
 
 TESTURL = 'https://xt2-ddbxs-com.supergslb.com/2022/win10/02/GHOST_WIN10_X64_V2022.03A.iso?auth_key=1647751253-0-0-fa0d22f1a999bac48a84b0dce65dfaa7'
@@ -18,15 +18,27 @@ class Aria2Operate():
     def __init__(self):
         # os.system('aria2c --conf-path="/Users/panzk/.config/aria2/aria2.conf" -D')
         #判断配置文件夹及配置文件是否存在
+        BASEPATH = ''
+        if getattr(sys, 'frozen', False):
+            BASEPATH = sys._MEIPASS + '/'
         if not os.path.exists(os.path.expanduser('~/.config/ashore')):
             os.system('mkdir ~/.config/ashore')
-            os.system('cp config/aria2.conf ~/.config/ashore/aria2.conf')
-            os.system('cp config/aria2.session ~/.config/ashore/aria2.session')
+            os.system('cp ' + BASEPATH + 'config/aria2.conf ~/.config/ashore/aria2.conf')
+            os.system('cp ' + BASEPATH + 'config/aria2.session ~/.config/ashore/aria2.session')
         if not os.path.exists(os.path.expanduser('~/.config/ashore/aria2.conf')):
-            os.system('cp config/aria2.conf ~/.config/ashore/aria2.conf')
+            os.system('cp ' + BASEPATH + 'config/aria2.conf ~/.config/ashore/aria2.conf')
         if not os.path.exists(os.path.expanduser('~/.config/ashore/aria2.session')):
-            os.system('cp config/aria2.session ~/.config/ashore/aria2.session')
-        os.system('aria2c --conf-path="' + os.path.expanduser('~') +'/.config/ashore/aria2.conf" -D')
+            os.system('cp ' + BASEPATH + 'config/aria2.session ~/.config/ashore/aria2.session')
+        cmd = ''
+        if os.path.exists('/usr/bin/aria2c'):
+            cmd = ['/usr/bin/aria2c', '--conf-path="' + os.path.expanduser('~') + '/.config/ashore/aria2.conf"', '-D']
+        elif os.path.exists('/usr/local/bin/aria2c'):
+            cmd = ['/usr/local/bin/aria2c', '--conf-path="' + os.path.expanduser('~') + '/.config/ashore/aria2.conf"', '-D']
+        else:
+            exit(2)
+        subprocess.Popen(cmd,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # os.system('aria2c --conf-path="' + os.path.expanduser('~') +'/.config/ashore/aria2.conf" -D')
+        # print('aria2c --conf-path="' + os.path.expanduser('~') +'/.config/ashore/aria2.conf" -D')
         self.aria2 = aria2p.API(aria2p.Client(host="http://localhost",port=6801,secret=""))
 
     def getDownloading(self):
@@ -84,7 +96,7 @@ class Aria2Operate():
 
     def __del__(self):
         os.system('pkill -f aria2c')
-        # print("调用__del__() 销毁对象，释放其空间")
+        print("调用__del__() 销毁对象，释放其空间")
 
 if __name__ == '__main__':
     aria2Operate = Aria2Operate()

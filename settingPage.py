@@ -16,7 +16,7 @@ from PyQt6.QtGui import QFileSystemModel
 from PyQt6.QtCore import Qt, pyqtSignal, QThread, QMutex
 
 TESTDIC  = {
-    'conf-path' :   '/Users/panzk/.config/aria2/aria2.conf',
+    'conf-path' :   '/Users/panzk/.config/ashore/aria2.conf',
     'dir'       :   '/Users/panzk/Downloads',
     'user-agent':   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:98.0) Gecko/20100101 Firefox/98.0',
     'max-concurrent-downloads'      :   '5',

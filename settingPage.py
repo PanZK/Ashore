@@ -318,10 +318,13 @@ class SettingPage(QWidget):
         for key,value in USERCONFIG.items():
             self.setConfig(configFile, aria2pDic, key, value)
         self.sinOut.emit(aria2pDic)                     #把修改好的aria2p的全局配置字典发射信号给主程序,让主程序配置运行中的aria2p
-        configFile.write(open(self.confPath, 'w'))         #写入aria2配置文件
-        self.globalConfig = aria2pDic                   #将修改后的aria2p的全局配置赋给self.globalConfig
-        self.updateSetting(self.globalConfig)           #刷新界面
-        self.saveInfoLabel.setText('保存成功')
+        self.btTracker.setText(aria2pDic['dir'])
+        # configFile.write(open(self.confPath, 'w'))         #写入aria2配置文件
+        with open(self.confPath, 'w', encoding='utf-8') as file:
+            configFile.write(file)
+        # self.globalConfig = aria2pDic                   #将修改后的aria2p的全局配置赋给self.globalConfig
+        # self.updateSetting(self.globalConfig)           #刷新界面
+        # self.saveInfoLabel.setText('保存成功')
         # print(configFile.get('global','dir'))
         # print(aria2pDic)
     

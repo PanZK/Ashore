@@ -58,20 +58,27 @@ class Thread(QThread):
                 html = response.read()
                 html = html.decode('UTF-8')
             except TimeoutError:
-                print('不知道哪错了')
+                # print('不知道哪错了')
+                self.text = 'Error'
             except urllib.error.URLError as e:
-                print('URLError')
+                # print('URLError')
+                self.text = 'URLError:\t'
                 if hasattr(e, 'code'):
-                    print(e.code)
+                    # print(e.code)
+                    self.text += e.code
                 if hasattr(e, 'reason'):
-                    print(e.reason)
+                    # print(e.reason)
+                    self.text += str(e.reason)
             except urllib.error.HTTPError as e:
-                print('HTTPError')
+                self.text = 'HTTPError:\t'
                 if hasattr(e, 'code'):
-                    print(e.code)
+                    # print(e.code)
+                    self.text += e.code
                 if hasattr(e, 'reason'):
-                    print(e.reason)
+                    # print(e.reason)
+                    self.text += str(e.reason)
             #如果成功,发送得到的html,并退出循环
+            #如果所有都失败html内容为Error:XXXXX
             else:
                 self.text = html
                 break
@@ -279,8 +286,9 @@ class SettingPage(QWidget):
         self.trakersThreading.start()
 
     def slotShowTrakers(self, html:str):
+        beginner = html[:6]
         #更新失败
-        if html == '':
+        if beginner != 'http:/' and beginner != 'udp://' and beginner != 'https:':
             self.trackerInfo.setText('更新失败')
         #更新成功
         else:

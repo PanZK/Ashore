@@ -27,6 +27,7 @@ class AddNewDialog(QDialog):
         self.downloadPath = downloadPath
         self.text = QTextEdit()
         self.text.setPlaceholderText("请输入下载地址,多个地址请用enter分割")
+        self.text.setAcceptRichText(False)
         self.dirEdit = QLineEdit(self.downloadPath)
         dirBtn = QPushButton('选择目录')
         dirBtn.setFixedWidth(100)

@@ -318,7 +318,6 @@ class SettingPage(QWidget):
         for key,value in USERCONFIG.items():
             self.setConfig(configFile, aria2pDic, key, value)
         self.sinOut.emit(aria2pDic)                     #把修改好的aria2p的全局配置字典发射信号给主程序,让主程序配置运行中的aria2p
-        self.btTracker.setText(aria2pDic['dir'])
         # configFile.write(open(self.confPath, 'w'))         #写入aria2配置文件
         with open(self.confPath, 'w', encoding='utf-8') as file:
             configFile.write(file)

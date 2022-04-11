@@ -96,7 +96,7 @@ class Aria2Operate():
 
     def __del__(self):
         os.system('pkill -f aria2c')
-        print("调用__del__() 销毁对象，释放其空间")
+        # print("调用__del__() 销毁对象，释放其空间")
 
 if __name__ == '__main__':
     aria2Operate = Aria2Operate()

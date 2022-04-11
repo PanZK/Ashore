@@ -32,7 +32,7 @@ class Section(QFrame):
     if getattr(sys, 'frozen', False):
         BASEPATH = sys._MEIPASS + '/'
 
-    def __init__(self, gid:str, fileName:str, status:str, fileSize:int, completedSize:int, speed:int):
+    def __init__(self, gid:str, fileName:str, status:str, fileSize:int, completedSize:int, speed:int, isTorrent:bool):
         super().__init__()
         Section.count += 1
         self.count = Section.count
@@ -42,6 +42,7 @@ class Section(QFrame):
         self.fileSize = fileSize
         self.completedSize = completedSize
         self.speed = speed
+        self.isTorrent = isTorrent
         self.initUI()
         self.setConnect()           #设置部件事件链接
 
@@ -191,11 +192,15 @@ class Section(QFrame):
         if status == 'active' or status == 'complete':
             if fileType in FILETYPE:
                 self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.ing/' + fileType + '.png'))
+            elif self.isTorrent == True:
+                self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.ing/bt.png'))
             else:
                 self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.ing/paper.png'))
         else:
             if fileType in FILETYPE:
                 self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.stop/' + fileType + '.png'))
+            elif self.isTorrent == True:
+                self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.stop/bt.png'))
             else:
                 self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.stop/paper.png'))
 

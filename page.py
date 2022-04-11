@@ -42,7 +42,7 @@ class Page(QScrollArea):
         for file in files:
             if self.sectionsDic.get(file.gid) == None:
                 #不在已有列表中，新建实例并添加进布局
-                self.sectionsDic.update({file.gid : Section(gid=file.gid, fileName=file.name, status=file.status, fileSize=file.total_length, completedSize=file.completed_length, speed=file.download_speed)})
+                self.sectionsDic.update({file.gid : Section(gid=file.gid, fileName=file.name, status=file.status, fileSize=file.total_length, completedSize=file.completed_length, speed=file.download_speed, isTorrent=file.is_torrent)})
                 self.sectionLayout.addWidget(self.sectionsDic[file.gid])
                 h = self.sectionListWidget.height()
                 self.sectionListWidget.resize(w, h+120)

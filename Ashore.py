@@ -5,14 +5,14 @@
 @File    :   Ashore.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.80
+@Version :   0.1.87
 @Contact :   for_freedom_x64@live.com
 '''
 
 import sys, os, subprocess
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QSplashScreen, QMenu
 from PyQt6.QtGui import QIcon, QPixmap, QAction
-from PyQt6.QtCore import QTimer, QSize
+from PyQt6.QtCore import QTimer, QSize, QEvent, pyqtSignal
 from page import Page
 from aria2Operate import Aria2Operate
 from addNewDialog import AddNewDialog
@@ -50,7 +50,7 @@ class Ashore(QMainWindow):
         menuBar = self.menuBar()
         newBtn = QAction('新建下载',self)
         newBtn.setShortcut('Ctrl+N')
-        newBtn.triggered.connect(self.slotAddNew)
+        newBtn.triggered.connect(self.slotClickBtnAddNew)
         fileMenu = menuBar.addMenu("文件")
         fileMenu.addAction(newBtn)
         showBtn = QAction('显示窗口',self)
@@ -131,7 +131,7 @@ class Ashore(QMainWindow):
         self.createMenuBar()
 
     def setConnect(self):
-        self.addBtn.clicked.connect(self.slotAddNew)
+        self.addBtn.clicked.connect(self.slotClickBtnAddNew)
         self.tabDownloading.clicked.connect(self.slotSwitchDownloading)
         self.tabDownloaded.clicked.connect(self.slotSwitchDownloaded)
         self.tabSetting.clicked.connect(self.slotSwitchSetting)
@@ -202,13 +202,16 @@ class Ashore(QMainWindow):
         self.pageSetting.updateSetting(options)
         self.pageStack.setCurrentIndex(2)
 
-    def slotAddNew(self):
+    def slotAddNew(self, urlList:list=[]):
         # form = AddNewDialog(DEFAULTPATH)
-        form = AddNewDialog(self.pageSetting.getDownloadPath())
+        form = AddNewDialog(self.pageSetting.getDownloadPath(), urlList)
         form.sinOut.connect(self.aria2Operate.addDownloads)
         form.show()
         form.exec()
         self.updatePage()
+
+    def slotClickBtnAddNew(self):
+        self.slotAddNew()
 
     def slotDoubleClick(self, data:tuple):
         gid = data[0]
@@ -237,23 +240,38 @@ class Ashore(QMainWindow):
     
     def slotSaveConfig(self, conf:dict):
         self.aria2Operate.setGlobalConfig(conf)
+    
+class MyApplication(QApplication):
+
+    fileOpenSignal = pyqtSignal(list)
+
+    def __init__(self, arguments):
+        super().__init__(arguments)
+        self.setQuitOnLastWindowClosed(False)    #设置关闭窗口后最小化
+        self.setApplicationVersion('0.0.75')
+        self.setOrganizationName('PanZK')
+        self.setApplicationName("Ashore")
+
+    def event(self, event):
+        if event.type() == QEvent.Type.FileOpen:    # 对请求进行判断
+            self.fileOpenSignal.emit([event.url().toString()])
+        return super().event(event)
 
 if __name__ == '__main__':
     BASEPATH = ''
     if getattr(sys, 'frozen', False):
         BASEPATH = sys._MEIPASS + '/'
-    app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)    #设置关闭窗口后最小化
+    app = MyApplication(sys.argv)
     app.setWindowIcon(QIcon(BASEPATH + 'static/icon/icon.funtion/icon.icns'))
     splash = QSplashScreen(QPixmap(BASEPATH + 'static/img/cover.png'))
     splash.show()                               #展示启动图片
     app.processEvents()                         #防止进程卡死
-    app.setApplicationVersion('0.0.75')
-    app.setOrganizationName('PanZK')
-    app.setApplicationName("Ashore")
     exe = Ashore()
     exe.show()
     splash.finish(exe)                  #关闭启动界面
+    if len(sys.argv) != 1:
+        exe.slotAddNew(sys.argv[1:])
+    app.fileOpenSignal.connect(exe.slotAddNew)
     app.exec()
     del exe
     sys.exit()

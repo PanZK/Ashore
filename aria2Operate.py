@@ -5,7 +5,7 @@
 @File    :   aria2Operate.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.80
+@Version :   0.1.87
 @Contact :   for_freedom_x64@live.com
 '''
 
@@ -50,8 +50,10 @@ class Aria2Operate():
     def addDownloads(self, data:tuple):
         urls = data[0]
         path = data[1]
-        for url in urls:
+        for url in urls['urlList']:
             self.aria2.add(url, {'dir': path})
+        for torrent in urls['torrentList']:
+            self.aria2.add_torrent(torrent)
     
     def getObjects(self, gids:list[str]) -> list:   #通过gid号得到aria2下载对象downloaddObject
         temp = []

@@ -5,7 +5,7 @@
 @File    :   addNew.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.80
+@Version :   0.1.87
 @Contact :   for_freedom_x64@live.com
 '''
 
@@ -16,17 +16,25 @@ from PyQt6.QtCore import Qt, pyqtSignal
 REDIC = {
     'url' : r'(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?',
     'magnet' : r'(magnet:\?xt=urn:btih:)[0-9a-fA-F]{40}',
+    'torrent0' : r'(http|ftp|https):\/\/(.*?\.torrent)',
+    'torrent1' : r'file://(/.*?\.torrent)',
+    'torrent2' : r'(/Users.*?\.torrent)',
     }
 
 class AddNewDialog(QDialog):
 
     sinOut = pyqtSignal(tuple)
 
-    def __init__(self, downloadPath):
+    def __init__(self, downloadPath:str=os.path.expanduser('~/Downloads'), urlList:list=None):
         super().__init__()
         self.downloadPath = downloadPath
         self.text = QTextEdit()
         self.text.setPlaceholderText("请输入下载地址,多个地址请用enter分割")
+        if urlList != None:
+            urls = ''
+            for url in urlList:
+                urls += url + '\n'
+            self.text.setText(urls)
         self.text.setAcceptRichText(False)
         self.dirEdit = QLineEdit(self.downloadPath)
         dirBtn = QPushButton('选择目录')
@@ -45,9 +53,11 @@ class AddNewDialog(QDialog):
         self.setLayout(mainLayout)
         self.setMinimumSize(500, 300)
         self.setWindowModality(Qt.WindowModality.NonModal)  # 非模态，可与其他窗口交互
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         dirBtn.clicked.connect(self.slotDir)
         confirmBtn.clicked.connect(self.slotConfirm)
         cancelBtn.clicked.connect(self.close)
+        
 
     def slotDir(self):
         path = QFileDialog.getExistingDirectory(self,'Open dir', self.downloadPath, QFileDialog.Option.ShowDirsOnly)
@@ -57,21 +67,32 @@ class AddNewDialog(QDialog):
     def slotConfirm(self):
         text = self.text.toPlainText()
         if text != '':
-            urlList = []
+            urls = {'urlList': [], 'torrentList': []}
             #校验是否为url或magnet
             for item in text.split('\n'):
                 temp1 = re.findall(REDIC['url'], item)
                 temp2 = re.findall(REDIC['magnet'], item)
-                print(temp2)
                 if temp1 != [] or temp2 != []:
-                    urlList.append(item)
+                    urls['urlList'].append(item)
+                    continue
+                temp3 = re.findall(REDIC['torrent1'], item)
+                temp4 = re.findall(REDIC['torrent2'], item)
+                temp0 = re.findall(REDIC['torrent0'], item)
+                if temp0 != []:
+                    urls['torrentList'].append(item)
+                    continue
+                elif temp3 != []:
+                    urls['torrentList'].append(temp3[0])
+                    continue
+                elif temp4 != []:
+                    urls['torrentList'].append(temp4[0])
+                    continue
             dir = self.dirEdit.text()
-            print(urlList)
-            self.sinOut.emit((urlList,dir))
+            self.sinOut.emit((urls,dir))
         self.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    exe = AddNewDialog(os.path.expanduser('~/Downloads'))
+    exe = AddNewDialog(os.path.expanduser('~/Downloads'),['aaa'])
     exe.show()
     sys.exit(app.exec())

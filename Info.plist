@@ -17,9 +17,9 @@
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>0.1.84</string>
+        <string>0.1.87</string>
 		<key>CFBundleVersion</key>
-        <string>0.1.84</string>
+        <string>0.1.87</string>
         <!-- <key>DTCompiler</key>
         <string>com.apple.compilers.llvm.clang.1_0</string>
 		<key>CFBundleIdentifier</key>
@@ -50,14 +50,29 @@ PanZK 于2022制作</string>
                 </array>
             </dict>
             <dict>
-                <key>CFBundleTypeRole</key>
-                <string>Editor</string>
                 <key>CFBundleURLName</key>
                 <string>Magnet Protocol</string>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
                 <key>CFBundleURLSchemes</key>
                 <array>
                     <string>magnet</string>
                 </array>
+            </dict>
+        </array>
+        <key>CFBundleDocumentTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeExtensions</key>
+                <array>
+                    <string>torrent</string>
+                </array>
+                <key>CFBundleTypeName</key>
+                <string>Torrent</string>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>NSPersistentStoreTypeKey</key>
+                <string>NSXMLStoreType</string>
             </dict>
         </array>
         <key>NSMainNibFile</key>

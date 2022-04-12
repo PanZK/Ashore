@@ -31,9 +31,9 @@ class Aria2Operate():
             os.system('cp ' + BASEPATH + 'config/aria2.session ~/.config/ashore/aria2.session')
         cmd = ''
         if os.path.exists('/usr/bin/aria2c'):
-            cmd = ['/usr/bin/aria2c', '--conf-path="' + os.path.expanduser('~') + '/.config/ashore/aria2.conf"', '-D']
+            cmd = '/usr/bin/aria2c --conf-path="' + os.path.expanduser('~') + '/.config/ashore/aria2.conf" -D'
         elif os.path.exists('/usr/local/bin/aria2c'):
-            cmd = ['/usr/local/bin/aria2c', '--conf-path="' + os.path.expanduser('~') + '/.config/ashore/aria2.conf"', '-D']
+            cmd = '/usr/local/bin/aria2c --conf-path="' + os.path.expanduser('~') + '/.config/ashore/aria2.conf" -D'
         else:
             exit(2)
         subprocess.Popen(cmd,shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

@@ -5,7 +5,7 @@
 @File    :   aria2Operate.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.87
+@Version :   0.1.90
 @Contact :   for_freedom_x64@live.com
 '''
 
@@ -55,19 +55,19 @@ class Aria2Operate():
         for torrent in urls['torrentList']:
             self.aria2.add_torrent(torrent)
     
-    def getObjects(self, gids:list[str]) -> list:   #通过gid号得到aria2下载对象downloaddObject
+    def getObjects(self, gids:list) -> list:   #通过gid号得到aria2下载对象downloaddObject
         temp = []
         for gid in gids:
             temp.append(self.aria2.get_download(gid))
         return temp
 
-    def resumeDownloads(self, gids: list[str]):
+    def resumeDownloads(self, gids: list):
         self.aria2.resume(self.getObjects(gids))
 
-    def pauseDownloads(self, gids: list[str]):
+    def pauseDownloads(self, gids: list):
         self.aria2.pause(self.getObjects(gids))
     
-    def retryDownloads(self, gids: list[str]):
+    def retryDownloads(self, gids: list):
         self.aria2.retry_downloads(self.getObjects(gids))
 
     def getDir(self, gid: str) -> str:
@@ -81,7 +81,7 @@ class Aria2Operate():
         filePath = option.dir + '/' + temp.name
         return filePath
     
-    def removeDelDownloads(self, gids: list[str],  delFiles: bool = False):
+    def removeDelDownloads(self, gids: list,  delFiles: bool = False):
         temp = self.getObjects(gids)
         self.aria2.remove(temp, force = True, files=delFiles, clean=True)
 

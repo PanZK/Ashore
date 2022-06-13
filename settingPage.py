@@ -5,12 +5,11 @@
 @File    :   settingPage.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.80
+@Version :   0.1.90
 @Contact :   for_freedom_x64@live.com
 '''
 
-import sys, os, time, configparser
-import urllib.request
+import sys, os, time, configparser, platform, urllib.request
 from PyQt6.QtWidgets import QApplication, QLabel, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QFileDialog, QScrollArea, QFormLayout, QLineEdit, QTextEdit,QGridLayout, QComboBox, QCompleter, QSpinBox
 from PyQt6.QtGui import QFileSystemModel
 from PyQt6.QtCore import Qt, pyqtSignal, QThread, QMutex
@@ -54,7 +53,7 @@ class Thread(QThread):
         for url in TRACKERURL:
             request = urllib.request.Request(url=url, headers=HEADERS)
             try:
-                response = urllib.request.urlopen(request, timeout=10)
+                response = urllib.request.urlopen(request, timeout=30)
                 html = response.read()
                 html = html.decode('UTF-8')
             except TimeoutError:
@@ -101,7 +100,13 @@ class SettingPage(QWidget):
     exeConfPath = 'config'
     if getattr(sys, 'frozen', False):
         BASEPATH = sys._MEIPASS + '/'
-        exeConfPath = os.path.dirname(os.path.dirname(sys.executable)) + '/Resources/config'
+        if platform.system() == 'Darwin':
+            exeConfPath = os.path.dirname(os.path.dirname(sys.executable)) + '/Resources/config'
+        elif platform.system() == 'Linux':
+            exeConfPath = os.path.dirname(os.path.dirname(sys.executable))
+        elif platform.system() == 'MINGW32_NT':
+            # exeConfPath = os.path.dirname(os.path.dirname(sys.executable))
+            pass
 
     def __init__(self):
         super().__init__()

@@ -5,14 +5,14 @@
 @File    :   Ashore.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.87
+@Version :   0.1.90
 @Contact :   for_freedom_x64@live.com
 '''
 
-import sys, os, subprocess
+import sys, os, platform
 from PyQt6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QSplashScreen, QMenu
-from PyQt6.QtGui import QIcon, QPixmap, QAction
-from PyQt6.QtCore import QTimer, QSize, QEvent, pyqtSignal
+from PyQt6.QtGui import QIcon, QPixmap, QAction, QDesktopServices
+from PyQt6.QtCore import QTimer, QSize, QEvent, QUrl, pyqtSignal
 from page import Page
 from aria2Operate import Aria2Operate
 from addNewDialog import AddNewDialog
@@ -136,7 +136,6 @@ class Ashore(QMainWindow):
         self.tabDownloaded.clicked.connect(self.slotSwitchDownloaded)
         self.tabSetting.clicked.connect(self.slotSwitchSetting)
         self.pageSetting.sinOut.connect(self.slotSaveConfig)
-        # self.pageDownloading.Section
         # self.Section.doubleClickOut.connect(self.slotDoubleClick)
 
     def updatePage(self):
@@ -223,14 +222,14 @@ class Ashore(QMainWindow):
             self.aria2Operate.resumeDownloads([gid])
         elif status == 'complete':
             filePath = self.aria2Operate.getFilePath(gid)
-            subprocess.run(['open', filePath])
+            QDesktopServices.openUrl(QUrl.fromLocalFile(filePath))
         elif status == 'error':
             self.aria2Operate.retryDownloads([gid])
         self.updatePage()
 
     def slotOpenFolder(self, gid:str):
         dir = self.aria2Operate.getDir(gid)
-        subprocess.run(['open',dir])
+        QDesktopServices.openUrl(QUrl.fromLocalFile(dir))
         self.updatePage()
     
     def slotRemoveDel(self, data:tuple):
@@ -262,7 +261,10 @@ if __name__ == '__main__':
     if getattr(sys, 'frozen', False):
         BASEPATH = sys._MEIPASS + '/'
     app = MyApplication(sys.argv)
-    app.setWindowIcon(QIcon(BASEPATH + 'static/icon/icon.funtion/icon.icns'))
+    if platform.system() == 'Darwin':
+        app.setWindowIcon(QIcon(BASEPATH + 'static/icon/icon.funtion/icon.icns'))
+    elif platform.system() == 'Linux':
+        app.setWindowIcon(QIcon(BASEPATH + 'static/icon/icon.funtion/icon0.png'))
     splash = QSplashScreen(QPixmap(BASEPATH + 'static/img/cover.png'))
     splash.show()                               #展示启动图片
     app.processEvents()                         #防止进程卡死

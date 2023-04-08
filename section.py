@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 '''
-@Time    :   2022/03/20 14:20:36
+@Time    :   2023/03/20 14:20:36
 @File    :   section.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.80
+@Version :   0.7.66
 @Contact :   for_freedom_x64@live.com
 '''
 
@@ -20,6 +20,7 @@ class Section(QFrame):
     count = 0
     doubleClickOut = pyqtSignal(tuple)
     openDirOut = pyqtSignal(str)
+    cpUrlOut = pyqtSignal(str)
     removeDelOut = pyqtSignal(tuple)
     #生成资源文件目录访问路径
     #说明： pyinstaller工具打包的可执行文件，运行时sys。frozen会被设置成True
@@ -32,7 +33,7 @@ class Section(QFrame):
     if getattr(sys, 'frozen', False):
         BASEPATH = sys._MEIPASS + '/'
 
-    def __init__(self, gid:str, fileName:str, status:str, fileSize:int, completedSize:int, speed:int, isTorrent:bool):
+    def __init__(self, gid:str, fileName:str, status:str, fileSize:int, completedSize:int, speed:int, isTorrent:bool=False):
         super().__init__()
         Section.count += 1
         self.count = Section.count
@@ -63,7 +64,7 @@ class Section(QFrame):
             self.rateLabel = QLabel('{:.1f}%'.format(self.completedSize / self.fileSize * 100))
         self.rateLabel.setFixedSize(100,25)
         self.completedLabel = QLabel('已下载:')
-        self.completedLabel.setFixedSize(42,25)
+        self.completedLabel.setFixedSize(50,25)
         # self.completedLabel.setMinimumWidth(100)
         self.speedLabel = QLabel(self.getSpeedStr())
         self.speedLabel.setFixedSize(100,25)
@@ -76,47 +77,63 @@ class Section(QFrame):
             self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/pause.png'))
             self.aOrpBtn.setIconSize(QSize(16,16))
             self.aOrpBtn.setToolTip('暂停任务')
+            self.aOrpBtn.setStatusTip('暂停任务')
         elif self.status == 'paused':
             self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/play.png'))
             self.aOrpBtn.setIconSize(QSize(20,20))
             self.aOrpBtn.setToolTip('开始任务')
-        elif self.status == 'complete':
+            self.aOrpBtn.setStatusTip('开始任务')
+        elif self.status == 'completed':
             self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/openfile.png'))
             self.aOrpBtn.setIconSize(QSize(18,18))
             self.aOrpBtn.setToolTip('打开文件')
+            self.aOrpBtn.setStatusTip('打开文件')
         elif self.status == 'error':
             self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/retry.png'))
             self.aOrpBtn.setIconSize(QSize(18,18))
             self.aOrpBtn.setToolTip('重试')
+            self.aOrpBtn.setStatusTip('重试')
         self.openDirBtn = QPushButton()
         self.openDirBtn.setFixedSize(23,23)
         self.openDirBtn.setFlat(True)
         self.openDirBtn.setIconSize(QSize(16,16))
         self.openDirBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/openfolder.png'))
         self.openDirBtn.setToolTip('打开目录')
-        self.removeBtn =  QPushButton()
+        self.openDirBtn.setStatusTip('打开文件所在目录')
+        self.cpUrlBtn = QPushButton()
+        self.cpUrlBtn.setFixedSize(23,23)
+        self.cpUrlBtn.setFlat(True)
+        self.cpUrlBtn.setIconSize(QSize(16,16))
+        self.cpUrlBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/copy.png'))
+        self.cpUrlBtn.setToolTip('复制下载链接')
+        self.cpUrlBtn.setStatusTip('复制下载链接到剪贴板')
+        self.removeBtn = QPushButton()
         self.removeBtn.setFixedSize(23,23)
         self.removeBtn.setFlat(True)
         self.removeBtn.setIconSize(QSize(20,20))
         self.removeBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/remove.png'))
         self.removeBtn.setToolTip('从列表中移除任务')
-        self.delBtn =  QPushButton()
+        self.removeBtn.setStatusTip('从列表中移除任务，不删除下载文件')
+        self.delBtn = QPushButton()
         self.delBtn.setFixedSize(23,23)
         self.delBtn.setFlat(True)
         self.delBtn.setIconSize(QSize(16,16))
         self.delBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/del.png'))
         self.delBtn.setToolTip('彻底删除任务')
+        self.delBtn.setStatusTip('从列表中移除任务，同时删除下载文件')
 
         btnLayout = QHBoxLayout()
         btnLayout.addWidget(temp)
         btnLayout.addWidget(self.aOrpBtn)
         btnLayout.addWidget(self.openDirBtn)
+        btnLayout.addWidget(self.cpUrlBtn)
         btnLayout.addWidget(self.removeBtn)
         btnLayout.addWidget(self.delBtn)
         btnLayout.addStretch()
         btnLayout.setContentsMargins(0,5,0,0)
         self.aOrpBtn.hide()
         self.openDirBtn.hide()
+        self.cpUrlBtn.hide()
         self.removeBtn.hide()
         self.delBtn.hide()
         infoLayout = QHBoxLayout()
@@ -183,13 +200,13 @@ class Section(QFrame):
             self.speedLabel.setText('错误')
             self.aOrpBtn.setIcon(QIcon(self.BASEPATH + 'static/icon/icon.funtion/retry.png'))
             self.aOrpBtn.setToolTip('重试')
-        elif status == 'complete':
+        elif status == 'completed':
             self.speedLabel.setText('已完成')
         self.setIcon(status)
     
     def setIcon(self, status:str):
         fileType = self.fileName.split('.')[-1]
-        if status == 'active' or status == 'complete':
+        if status == 'active' or status == 'completed':
             if fileType in FILETYPE:
                 self.iconLabel.setPixmap(QPixmap(self.BASEPATH + 'static/icon/icon.ing/' + fileType + '.png'))
             elif self.isTorrent == True:
@@ -218,6 +235,7 @@ class Section(QFrame):
         # print('进入')
         self.aOrpBtn.show()
         self.openDirBtn.show()
+        self.cpUrlBtn.show()
         self.removeBtn.show()
         self.delBtn.show()
         # self.setStyleSheet('#Section{border: 2px solid blue;border-radius:5;}')
@@ -225,12 +243,14 @@ class Section(QFrame):
         # print('拿走')
         self.aOrpBtn.hide()
         self.openDirBtn.hide()
+        self.cpUrlBtn.hide()
         self.removeBtn.hide()
         self.delBtn.hide()
         # self.setStyleSheet('#Section{border: 2px solid #222333;border-radius:5;}')
     def setConnect(self):
-        self.openDirBtn.clicked.connect(self.slotOpenFolder)
         self.aOrpBtn.clicked.connect(self.slotAOrPBtnClicked)
+        self.openDirBtn.clicked.connect(self.slotOpenFolder)
+        self.cpUrlBtn.clicked.connect(self.slotcpUrl)
         self.removeBtn.clicked.connect(self.slotRemove)
         self.delBtn.clicked.connect(self.slotDel)
 
@@ -239,6 +259,9 @@ class Section(QFrame):
 
     def slotOpenFolder(self):       #打开文件夹
         self.openDirOut.emit(self.gid)
+
+    def slotcpUrl(self):        #复制url
+        self.cpUrlOut.emit(self.gid)
 
     def slotRemove(self):
         self.removeDelOut.emit((self.gid, False))

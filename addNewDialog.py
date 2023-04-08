@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 '''
-@Time    :   2022/03/25 15:06:43
-@File    :   addNew.py
+@Time    :   2023/03/25 15:06:43
+@File    :   addNewDialog.py
 @Software:   VSCode
 @Author  :   PPPPAN 
-@Version :   0.1.87
+@Version :   0.7.66
 @Contact :   for_freedom_x64@live.com
 '''
 
@@ -24,12 +24,13 @@ REDIC = {
 class AddNewDialog(QDialog):
 
     sinOut = pyqtSignal(tuple)
+    #发射元组信号[0]为url地址，其为字典，分为普通地址'urlList'和磁链地址'torrentList'两项内容
 
     def __init__(self, downloadPath:str=os.path.expanduser('~/Downloads'), urlList:list=None):
         super().__init__()
         self.downloadPath = downloadPath
         self.text = QTextEdit()
-        self.text.setPlaceholderText("请输入下载地址,多个地址请用enter分割")
+        self.text.setPlaceholderText("请输入下载地址,多个地址请用Enter分割")
         if urlList != None:
             urls = ''
             for url in urlList:
@@ -89,6 +90,7 @@ class AddNewDialog(QDialog):
                     continue
             dir = self.dirEdit.text()
             self.sinOut.emit((urls,dir))
+            print((urls,dir))
         self.close()
 
 if __name__ == '__main__':

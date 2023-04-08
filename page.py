@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 '''
-@Time    :   2022/03/20 22:41:51
+@Time    :   2023/03/20 22:41:51
 @File    :   page.py
 @Software:   VSCode
 @Author  :   PPPPAN 
@@ -9,10 +9,9 @@
 @Contact :   for_freedom_x64@live.com
 '''
 
-import sys, os
-from PyQt6.QtWidgets import QApplication, QTabWidget, QLabel, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QStackedLayout, QListWidget, QMessageBox, QFileDialog, QProgressBar, QFrame, QScrollArea
-from PyQt6.QtGui import QGuiApplication, QFont, QIcon, QImage,QPixmap
-from PyQt6.QtCore import Qt, pyqtSignal, QRect
+import sys
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QScrollArea
+from PyQt6.QtCore import Qt
 from section import Section
 
 class Page(QScrollArea):
@@ -36,20 +35,21 @@ class Page(QScrollArea):
         self.sectionListWidget.resize(event.size().width()-5,self.sectionListWidget.height())
         self.update()
     
-    def updateSections(self, files):    #刷新界面
+    def updateSections(self, missionsDic:dict):    #刷新界面
         tempList = []
         w = self.sectionListWidget.width()
-        for file in files:
-            if self.sectionsDic.get(file.gid) == None:
-                #不在已有列表中，新建实例并添加进布局
-                self.sectionsDic.update({file.gid : Section(gid=file.gid, fileName=file.name, status=file.status, fileSize=file.total_length, completedSize=file.completed_length, speed=file.download_speed, isTorrent=file.is_torrent)})
-                self.sectionLayout.addWidget(self.sectionsDic[file.gid])
-                h = self.sectionListWidget.height()
-                self.sectionListWidget.resize(w, h+120)
-            else:
-                #在已有列表中，更新信息
-                self.sectionsDic[file.gid].updateInfo(status=file.status, fileSize=file.total_length, completedSize=file.completed_length, speed=file.download_speed)
-            tempList.append(file.gid)
+        for status,missions in missionsDic.items():
+            for key,attribute in missions.items():
+                if self.sectionsDic.get(key) == None:
+                    #不在已有列表中，新建实例并添加进布局
+                    self.sectionsDic.update({key : Section(gid=key, fileName=attribute['filename'], status=status, fileSize=attribute['totalLength'], completedSize=attribute['completedLength'], speed=attribute['downloadSpeed'], isTorrent=attribute['isTorrent'])})
+                    self.sectionLayout.addWidget(self.sectionsDic[key])
+                    h = self.sectionListWidget.height()
+                    self.sectionListWidget.resize(w, h+120)
+                else:
+                    #在已有列表中，更新信息
+                    self.sectionsDic[key].updateInfo(status=status, fileSize=attribute['totalLength'], completedSize=attribute['completedLength'], speed=attribute['downloadSpeed'])
+                tempList.append(key)
         #把不在列表内的删除
         for gid,item in list(self.sectionsDic.items()):
             if gid not in tempList:
@@ -57,6 +57,7 @@ class Page(QScrollArea):
                 self.sectionsDic.pop(gid, '删除失败')
                 h = self.sectionListWidget.height()
                 self.sectionListWidget.resize(w, h-120)
+        self.update()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
